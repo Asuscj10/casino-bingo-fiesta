@@ -8,10 +8,10 @@ interface BingoGameboardProps {
 
 const BingoGameboard: React.FC<BingoGameboardProps> = ({ drawnBalls }) => {
   const renderNumberGrid = () => {
-    const numbers = Array.from({ length: 99 }, (_, i) => i + 1);
+    const numbers = Array.from({ length: 90 }, (_, i) => i + 1);
     
     return (
-      <div className="grid grid-cols-10 gap-1 p-4">
+      <div className="grid grid-cols-9 gap-1 p-4">
         {numbers.map(number => {
           const isDrawn = drawnBalls.includes(number);
           return (
@@ -36,7 +36,7 @@ const BingoGameboard: React.FC<BingoGameboardProps> = ({ drawnBalls }) => {
   return (
     <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-600 border-2 shadow-2xl">
       <div className="p-4">
-        <h2 className="text-xl font-bold text-yellow-400 mb-4 text-center">TABLERO DE NÚMEROS</h2>
+        <h2 className="text-xl font-bold text-yellow-400 mb-4 text-center">TABLERO DE NÚMEROS (01-90)</h2>
         <div className="bg-black/30 rounded-lg">
           {renderNumberGrid()}
         </div>

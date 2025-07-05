@@ -5,54 +5,25 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Download, FileText, Globe } from 'lucide-react';
-
-interface BingoCard {
-  id: number;
-  numbers: (number | null)[][];
-}
+import { Download, FileText, Globe, Users } from 'lucide-react';
+import { 
+  BingoCard, 
+  EuropeanStrip, 
+  generateRandomCard, 
+  generateEuropeanStrip, 
+  resetNumberTracker 
+} from '@/utils/bingoCardUtils';
 
 const BingoCardGenerator: React.FC = () => {
   const [numberOfCards, setNumberOfCards] = useState<number>(1);
+  const [numberOfStrips, setNumberOfStrips] = useState<number>(1);
   const [generatedCards, setGeneratedCards] = useState<BingoCard[]>([]);
+  const [generatedStrips, setGeneratedStrips] = useState<EuropeanStrip[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const generateRandomCard = (cardId: number): BingoCard => {
-    // Create a 9x3 grid
-    const card: (number | null)[][] = [];
-    const usedNumbers = new Set<number>();
-    
-    for (let row = 0; row < 3; row++) {
-      const cardRow: (number | null)[] = [];
-      const blanksInThisRow = Math.floor(Math.random() * 3) + 2; // 2-4 blanks per row
-      const blankPositions = new Set<number>();
-      
-      // Select random positions for blanks
-      while (blankPositions.size < blanksInThisRow) {
-        blankPositions.add(Math.floor(Math.random() * 9));
-      }
-      
-      for (let col = 0; col < 9; col++) {
-        if (blankPositions.has(col)) {
-          cardRow.push(null);
-        } else {
-          let randomNumber;
-          do {
-            randomNumber = Math.floor(Math.random() * 99) + 1;
-          } while (usedNumbers.has(randomNumber));
-          
-          usedNumbers.add(randomNumber);
-          cardRow.push(randomNumber);
-        }
-      }
-      card.push(cardRow);
-    }
-    
-    return { id: cardId, numbers: card };
-  };
-
-  const generateCards = async () => {
+  const generateIndividualCards = async () => {
     if (numberOfCards < 1 || numberOfCards > 20000) {
       toast({
         title: "Error",
@@ -66,6 +37,9 @@ const BingoCardGenerator: React.FC = () => {
     const cards: BingoCard[] = [];
     
     try {
+      // Reset tracker to avoid conflicts with previous generations
+      resetNumberTracker();
+      
       for (let i = 0; i < numberOfCards; i++) {
         cards.push(generateRandomCard(i + 1));
         
@@ -76,9 +50,10 @@ const BingoCardGenerator: React.FC = () => {
       }
       
       setGeneratedCards(cards);
+      setGeneratedStrips([]); // Clear strips when generating individual cards
       toast({
         title: "¡Éxito!",
-        description: `Se generaron ${numberOfCards} cartones de bingo`,
+        description: `Se generaron ${numberOfCards} cartones individuales`,
       });
     } catch (error) {
       toast({
@@ -91,11 +66,68 @@ const BingoCardGenerator: React.FC = () => {
     }
   };
 
+  const generateEuropeanStrips = async () => {
+    if (numberOfStrips < 1 || numberOfStrips > 1000) {
+      toast({
+        title: "Error",
+        description: "El número de tiras debe estar entre 1 y 1,000",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    const strips: EuropeanStrip[] = [];
+    
+    try {
+      // Reset tracker to start fresh
+      resetNumberTracker();
+      
+      for (let i = 0; i < numberOfStrips; i++) {
+        strips.push(generateEuropeanStrip(i + 1));
+        
+        // Update progress every 10 strips
+        if (i % 10 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 1));
+        }
+      }
+      
+      setGeneratedStrips(strips);
+      setGeneratedCards([]); // Clear individual cards when generating strips
+      toast({
+        title: "¡Éxito!",
+        description: `Se generaron ${numberOfStrips} tiras europeas (${numberOfStrips * 6} cartones en total)`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al generar las tiras",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const getAllCards = (): BingoCard[] => {
+    if (generatedCards.length > 0) {
+      return generatedCards;
+    }
+    if (generatedStrips.length > 0) {
+      return generatedStrips.flatMap(strip => strip.cards);
+    }
+    return [];
+  };
+
   const exportToPDF = () => {
-    // Create a printable HTML structure for PDF
-    const printContent = generatedCards.map(card => `
+    const allCards = getAllCards();
+    if (allCards.length === 0) return;
+
+    const printContent = allCards.map(card => `
       <div style="page-break-after: always; margin: 20px; border: 2px solid #000; padding: 10px;">
-        <h3 style="text-align: center; margin-bottom: 10px;">CARTÓN DE BINGO #${card.id}</h3>
+        <h3 style="text-align: center; margin-bottom: 10px;">
+          CARTÓN DE BINGO #${card.id}${card.seriesId ? ` - TIRA ${card.seriesId}` : ''}
+        </h3>
         <table style="width: 100%; border-collapse: collapse; margin: 0 auto;">
           ${card.numbers.map(row => `
             <tr>
@@ -139,6 +171,9 @@ const BingoCardGenerator: React.FC = () => {
   };
 
   const exportToHTML = () => {
+    const allCards = getAllCards();
+    if (allCards.length === 0) return;
+
     const htmlContent = `
       <!DOCTYPE html>
       <html lang="es">
@@ -163,11 +198,12 @@ const BingoCardGenerator: React.FC = () => {
         <div class="container">
           <div class="header">
             <h1>🎰 CARTONES DE BINGO CASINO 🎰</h1>
-            <p>Total de cartones generados: ${generatedCards.length}</p>
+            <p>Total de cartones generados: ${allCards.length}</p>
+            ${generatedStrips.length > 0 ? `<p>Tiras europeas: ${generatedStrips.length}</p>` : ''}
           </div>
-          ${generatedCards.map(card => `
+          ${allCards.map(card => `
             <div class="card">
-              <h3>CARTÓN DE BINGO #${card.id}</h3>
+              <h3>CARTÓN DE BINGO #${card.id}${card.seriesId ? ` - TIRA EUROPEA ${card.seriesId}` : ''}</h3>
               <table>
                 ${card.numbers.map(row => `
                   <tr>
@@ -190,10 +226,36 @@ const BingoCardGenerator: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cartones-bingo-${numberOfCards}.html`;
+    a.download = `cartones-bingo-${allCards.length}.html`;
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const renderCardPreview = (card: BingoCard) => (
+    <div key={card.id} className="bg-white p-4 rounded-lg">
+      <h4 className="text-center text-black font-bold mb-2">
+        Cartón #{card.id}{card.seriesId ? ` - Tira ${card.seriesId}` : ''}
+      </h4>
+      <table className="w-full border-collapse">
+        <tbody>
+          {card.numbers.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td
+                  key={cellIndex}
+                  className={`w-8 h-8 border border-gray-400 text-center text-xs font-bold ${
+                    cell ? 'bg-yellow-200 text-black' : 'bg-gray-100'
+                  }`}
+                >
+                  {cell ? cell.toString().padStart(2, '0') : ''}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
     <Card className="bg-gradient-to-br from-purple-800 to-purple-900 border-purple-600 border-2 shadow-2xl">
@@ -202,35 +264,89 @@ const BingoCardGenerator: React.FC = () => {
           🎲 GENERADOR DE CARTONES 🎲
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <Label htmlFor="numberOfCards" className="text-white font-bold">
-              Número de Cartones (máx. 20,000)
-            </Label>
-            <Input
-              id="numberOfCards"
-              type="number"
-              min="1"
-              max="20000"
-              value={numberOfCards}
-              onChange={(e) => setNumberOfCards(parseInt(e.target.value) || 1)}
-              className="mt-2 bg-white text-black font-bold"
-            />
-          </div>
-          
-          <div className="flex items-end">
-            <Button
-              onClick={generateCards}
-              disabled={isGenerating}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 transition-all duration-300 transform hover:scale-105"
-            >
-              {isGenerating ? 'Generando...' : 'GENERAR CARTONES'}
-            </Button>
-          </div>
-        </div>
+        <Tabs defaultValue="individual" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-yellow-600">
+            <TabsTrigger value="individual" className="text-black font-bold">
+              📄 Cartones Individuales
+            </TabsTrigger>
+            <TabsTrigger value="european" className="text-black font-bold">
+              🇪🇺 Tiras Europeas
+            </TabsTrigger>
+          </TabsList>
 
-        {generatedCards.length > 0 && (
-          <div className="space-y-4">
+          <TabsContent value="individual" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="numberOfCards" className="text-white font-bold">
+                  Número de Cartones (máx. 20,000)
+                </Label>
+                <Input
+                  id="numberOfCards"
+                  type="number"
+                  min="1"
+                  max="20000"
+                  value={numberOfCards}
+                  onChange={(e) => setNumberOfCards(parseInt(e.target.value) || 1)}
+                  className="mt-2 bg-white text-black font-bold"
+                />
+              </div>
+              
+              <div className="flex items-end">
+                <Button
+                  onClick={generateIndividualCards}
+                  disabled={isGenerating}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+                >
+                  {isGenerating ? 'Generando...' : 'GENERAR CARTONES'}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="european" className="space-y-6">
+            <div className="bg-blue-900 p-4 rounded-lg mb-6">
+              <h3 className="text-yellow-400 font-bold mb-2">🇪🇺 Tiras Europeas de Bingo</h3>
+              <p className="text-white text-sm">
+                Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
+                Perfectas para el bingo europeo tradicional.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="numberOfStrips" className="text-white font-bold">
+                  Número de Tiras (máx. 1,000)
+                </Label>
+                <Input
+                  id="numberOfStrips"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={numberOfStrips}
+                  onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
+                  className="mt-2 bg-white text-black font-bold"
+                />
+                <p className="text-gray-300 text-xs mt-1">
+                  Cada tira = 6 cartones ({numberOfStrips * 6} cartones en total)
+                </p>
+              </div>
+              
+              <div className="flex items-end">
+                <Button
+                  onClick={generateEuropeanStrips}
+                  disabled={isGenerating}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3"
+                >
+                  <Users className="mr-2" />
+                  {isGenerating ? 'Generando...' : 'GENERAR TIRAS'}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {(generatedCards.length > 0 || generatedStrips.length > 0) && (
+          <div className="space-y-4 mt-8">
             <div className="flex flex-wrap gap-4 justify-center">
               <Button
                 onClick={exportToPDF}
@@ -251,37 +367,18 @@ const BingoCardGenerator: React.FC = () => {
             
             <div className="bg-yellow-400 p-4 rounded-lg">
               <p className="text-black font-bold text-center">
-                ✅ {generatedCards.length} cartones generados exitosamente
+                ✅ {getAllCards().length} cartones generados exitosamente
+                {generatedStrips.length > 0 && ` en ${generatedStrips.length} tiras europeas`}
               </p>
             </div>
 
-            {/* Preview of first few cards */}
+            {/* Preview */}
             <div className="mt-6">
-              <h3 className="text-lg font-bold text-yellow-400 mb-4">Vista Previa (Primeros 3 Cartones)</h3>
+              <h3 className="text-lg font-bold text-yellow-400 mb-4">
+                Vista Previa (Primeros 3 Cartones)
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {generatedCards.slice(0, 3).map(card => (
-                  <div key={card.id} className="bg-white p-4 rounded-lg">
-                    <h4 className="text-center text-black font-bold mb-2">Cartón #{card.id}</h4>
-                    <table className="w-full border-collapse">
-                      <tbody>
-                        {card.numbers.map((row, rowIndex) => (
-                          <tr key={rowIndex}>
-                            {row.map((cell, cellIndex) => (
-                              <td
-                                key={cellIndex}
-                                className={`w-8 h-8 border border-gray-400 text-center text-xs font-bold ${
-                                  cell ? 'bg-yellow-200 text-black' : 'bg-gray-100'
-                                }`}
-                              >
-                                {cell ? cell.toString().padStart(2, '0') : ''}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ))}
+                {getAllCards().slice(0, 3).map(renderCardPreview)}
               </div>
             </div>
           </div>

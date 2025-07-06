@@ -132,24 +132,83 @@ const BingoCardGenerator: React.FC = () => {
     const allCards = getAllCards();
     if (allCards.length === 0) return;
 
-    const printContent = allCards.map(card => `
-      <div style="page-break-after: always; margin: 20px; border: 2px solid #000; padding: 10px;">
-        <h3 style="text-align: center; margin-bottom: 10px;">
-          CARTÓN DE BINGO #${card.serialNumber}${card.seriesId ? ` - TIRA ${card.seriesId}` : ''}
-        </h3>
-        <table style="width: 100%; border-collapse: collapse; margin: 0 auto;">
-          ${card.numbers.map(row => `
-            <tr>
-              ${row.map(cell => `
-                <td style="width: 40px; height: 40px; border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 14px; font-weight: bold; ${cell ? 'background: #f0f0f0;' : 'background: #fff;'}">
-                  ${cell ? cell.toString().padStart(2, '0') : ''}
-                </td>
-              `).join('')}
-            </tr>
-          `).join('')}
-        </table>
-      </div>
-    `).join('');
+    // Group cards for proper layout
+    const cardsPerPage = 12;
+    const pages: BingoCard[][] = [];
+    
+    if (generatedStrips.length > 0) {
+      // For European strips: 2 strips (12 cards) per page
+      for (let i = 0; i < generatedStrips.length; i += 2) {
+        const pageCards: BingoCard[] = [];
+        // First strip (6 cards on the left)
+        if (generatedStrips[i]) {
+          pageCards.push(...generatedStrips[i].cards);
+        }
+        // Second strip (6 cards on the right)
+        if (generatedStrips[i + 1]) {
+          pageCards.push(...generatedStrips[i + 1].cards);
+        }
+        pages.push(pageCards);
+      }
+    } else {
+      // For individual cards: 12 cards per page
+      for (let i = 0; i < allCards.length; i += cardsPerPage) {
+        pages.push(allCards.slice(i, i + cardsPerPage));
+      }
+    }
+
+    const printContent = pages.map((pageCards, pageIndex) => {
+      const leftCards = pageCards.slice(0, 6);
+      const rightCards = pageCards.slice(6, 12);
+      
+      return `
+        <div style="page-break-after: ${pageIndex < pages.length - 1 ? 'always' : 'auto'}; width: 21.59cm; height: 27.94cm; margin: 0; padding: 1cm; box-sizing: border-box; display: flex; justify-content: space-between;">
+          <!-- Left Column -->
+          <div style="width: 48%; display: flex; flex-direction: column; justify-content: space-around;">
+            ${leftCards.map(card => `
+              <div style="margin-bottom: 0.5cm; border: 2px solid #000; padding: 0.3cm;">
+                <h4 style="text-align: center; margin: 0 0 0.2cm 0; font-size: 12px; font-weight: bold;">
+                  CARTÓN DE BINGO #${card.serialNumber}
+                </h4>
+                <table style="width: 100%; border-collapse: collapse;">
+                  ${card.numbers.map(row => `
+                    <tr>
+                      ${row.map(cell => `
+                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #f0f0f0;' : 'background: #fff;'}">
+                          ${cell ? cell.toString().padStart(2, '0') : ''}
+                        </td>
+                      `).join('')}
+                    </tr>
+                  `).join('')}
+                </table>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Right Column -->
+          <div style="width: 48%; display: flex; flex-direction: column; justify-content: space-around;">
+            ${rightCards.map(card => `
+              <div style="margin-bottom: 0.5cm; border: 2px solid #000; padding: 0.3cm;">
+                <h4 style="text-align: center; margin: 0 0 0.2cm 0; font-size: 12px; font-weight: bold;">
+                  CARTÓN DE BINGO #${card.serialNumber}
+                </h4>
+                <table style="width: 100%; border-collapse: collapse;">
+                  ${card.numbers.map(row => `
+                    <tr>
+                      ${row.map(cell => `
+                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #f0f0f0;' : 'background: #fff;'}">
+                          ${cell ? cell.toString().padStart(2, '0') : ''}
+                        </td>
+                      `).join('')}
+                    </tr>
+                  `).join('')}
+                </table>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
 
     const printWindow = window.open('', '_blank');
     if (printWindow) {
@@ -158,7 +217,15 @@ const BingoCardGenerator: React.FC = () => {
           <head>
             <title>Cartones de Bingo</title>
             <style>
-              body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+              @page { 
+                size: 21.59cm 27.94cm; 
+                margin: 0; 
+              }
+              body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 0; 
+              }
               @media print { 
                 body { margin: 0; }
                 .no-print { display: none; }
@@ -166,7 +233,7 @@ const BingoCardGenerator: React.FC = () => {
             </style>
           </head>
           <body>
-            <div class="no-print" style="text-align: center; margin-bottom: 20px;">
+            <div class="no-print" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: white; padding: 10px; border: 1px solid #ccc;">
               <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 Imprimir Cartones
               </button>
@@ -183,6 +250,31 @@ const BingoCardGenerator: React.FC = () => {
     const allCards = getAllCards();
     if (allCards.length === 0) return;
 
+    // Group cards for proper layout
+    const cardsPerPage = 12;
+    const pages: BingoCard[][] = [];
+    
+    if (generatedStrips.length > 0) {
+      // For European strips: 2 strips (12 cards) per page
+      for (let i = 0; i < generatedStrips.length; i += 2) {
+        const pageCards: BingoCard[] = [];
+        // First strip (6 cards on the left)
+        if (generatedStrips[i]) {
+          pageCards.push(...generatedStrips[i].cards);
+        }
+        // Second strip (6 cards on the right)
+        if (generatedStrips[i + 1]) {
+          pageCards.push(...generatedStrips[i + 1].cards);
+        }
+        pages.push(pageCards);
+      }
+    } else {
+      // For individual cards: 12 cards per page
+      for (let i = 0; i < allCards.length; i += cardsPerPage) {
+        pages.push(allCards.slice(i, i + cardsPerPage));
+      }
+    }
+
     const htmlContent = `
       <!DOCTYPE html>
       <html lang="es">
@@ -191,42 +283,108 @@ const BingoCardGenerator: React.FC = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cartones de Bingo - Casino</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-          .container { max-width: 1200px; margin: 0 auto; }
-          .card { background: white; margin: 20px 0; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-          .card h3 { text-align: center; color: #d4af37; margin-bottom: 15px; }
-          table { width: 100%; border-collapse: collapse; margin: 0 auto; max-width: 450px; }
-          td { width: 50px; height: 50px; border: 2px solid #333; text-align: center; vertical-align: middle; font-size: 16px; font-weight: bold; }
-          .number { background: linear-gradient(135deg, #ffd700, #ffed4e); }
-          .blank { background: #f9f9f9; }
-          .header { text-align: center; background: linear-gradient(135deg, #d4af37, #ffd700); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
-          .header h1 { margin: 0; color: #000; font-size: 2.5em; }
+          @page { 
+            size: 21.59cm 27.94cm; 
+            margin: 0; 
+          }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: white; 
+          }
+          .page { 
+            width: 21.59cm; 
+            height: 27.94cm; 
+            margin: 0; 
+            padding: 1cm; 
+            box-sizing: border-box; 
+            display: flex; 
+            justify-content: space-between; 
+            page-break-after: always;
+          }
+          .page:last-child { page-break-after: auto; }
+          .column { 
+            width: 48%; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-around; 
+          }
+          .card { 
+            margin-bottom: 0.5cm; 
+            border: 2px solid #000; 
+            padding: 0.3cm; 
+          }
+          .card h4 { 
+            text-align: center; 
+            margin: 0 0 0.2cm 0; 
+            font-size: 12px; 
+            font-weight: bold; 
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+          }
+          td { 
+            width: 11.11%; 
+            height: 0.8cm; 
+            border: 1px solid #000; 
+            text-align: center; 
+            vertical-align: middle; 
+            font-size: 10px; 
+            font-weight: bold; 
+          }
+          .number { background: #f0f0f0; }
+          .blank { background: #fff; }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <h1>🎰 CARTONES DE BINGO CASINO 🎰</h1>
-            <p>Total de cartones generados: ${allCards.length}</p>
-            ${generatedStrips.length > 0 ? `<p>Tiras europeas: ${generatedStrips.length}</p>` : ''}
-          </div>
-          ${allCards.map(card => `
-            <div class="card">
-              <h3>CARTÓN DE BINGO #${card.serialNumber}${card.seriesId ? ` - TIRA EUROPEA ${card.seriesId}` : ''}</h3>
-              <table>
-                ${card.numbers.map(row => `
-                  <tr>
-                    ${row.map(cell => `
-                      <td class="${cell ? 'number' : 'blank'}">
-                        ${cell ? cell.toString().padStart(2, '0') : ''}
-                      </td>
-                    `).join('')}
-                  </tr>
+        ${pages.map(pageCards => {
+          const leftCards = pageCards.slice(0, 6);
+          const rightCards = pageCards.slice(6, 12);
+          
+          return `
+            <div class="page">
+              <div class="column">
+                ${leftCards.map(card => `
+                  <div class="card">
+                    <h4>CARTÓN DE BINGO #${card.serialNumber}</h4>
+                    <table>
+                      ${card.numbers.map(row => `
+                        <tr>
+                          ${row.map(cell => `
+                            <td class="${cell ? 'number' : 'blank'}">
+                              ${cell ? cell.toString().padStart(2, '0') : ''}
+                            </td>
+                          `).join('')}
+                        </tr>
+                      `).join('')}
+                    </table>
+                  </div>
                 `).join('')}
-              </table>
+              </div>
+              
+              <div class="column">
+                ${rightCards.map(card => `
+                  <div class="card">
+                    <h4>CARTÓN DE BINGO #${card.serialNumber}</h4>
+                    <table>
+                      ${card.numbers.map(row => `
+                        <tr>
+                          ${row.map(cell => `
+                            <td class="${cell ? 'number' : 'blank'}">
+                              ${cell ? cell.toString().padStart(2, '0') : ''}
+                            </td>
+                          `).join('')}
+                        </tr>
+                      `).join('')}
+                    </table>
+                  </div>
+                `).join('')}
+              </div>
             </div>
-          `).join('')}
-        </div>
+          `;
+        }).join('')}
       </body>
       </html>
     `;
@@ -243,7 +401,7 @@ const BingoCardGenerator: React.FC = () => {
   const renderCardPreview = (card: BingoCard) => (
     <div key={card.id} className="bg-white p-4 rounded-lg">
       <h4 className="text-center text-black font-bold mb-2">
-        Cartón #{card.serialNumber}{card.seriesId ? ` - Tira ${card.seriesId}` : ''}
+        Cartón #{card.serialNumber}
       </h4>
       <div className="text-center text-blue-600 font-bold text-sm mb-3">
         Serie: {card.serialNumber}

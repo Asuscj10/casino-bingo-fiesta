@@ -33,13 +33,22 @@ class NumberTracker {
 
 export const globalNumberTracker = new NumberTracker();
 
-const generateSerialNumber = (isStrip: boolean = false, id: number): string => {
+const generateSerialNumber = (isStrip: boolean = false, id: number, cardNumber?: number): string => {
   const now = new Date();
   const day = now.getDate().toString().padStart(2, '0');
   const month = (now.getMonth() + 1).toString().padStart(2, '0');
   const year = now.getFullYear().toString();
-  const prefix = isStrip ? 'T' : 'C';
-  return `${day}${month}${year}-${prefix}${id}`;
+  
+  if (isStrip && cardNumber) {
+    // For individual cards in a strip: 06072025-T1-1, 06072025-T1-2, etc.
+    return `${day}${month}${year}-T${id}-${cardNumber}`;
+  } else if (isStrip) {
+    // For the strip itself
+    return `${day}${month}${year}-T${id}`;
+  } else {
+    // For individual cards
+    return `${day}${month}${year}-C${id}`;
+  }
 };
 
 export const generateRandomCard = (cardId: number, seriesId?: number): BingoCard => {
@@ -129,7 +138,7 @@ export const generateEuropeanStrip = (stripId: number): EuropeanStrip => {
   // Distribute 90 numbers across 6 cards (15 numbers each)
   for (let cardIndex = 0; cardIndex < 6; cardIndex++) {
     const cardNumbers = shuffledNumbers.slice(cardIndex * 15, (cardIndex + 1) * 15);
-    const card = createCardFromNumbers(cardNumbers, stripId * 6 + cardIndex + 1, stripId);
+    const card = createCardFromNumbers(cardNumbers, stripId, cardIndex + 1);
     cards.push(card);
   }
   
@@ -143,7 +152,7 @@ export const generateEuropeanStrip = (stripId: number): EuropeanStrip => {
   };
 };
 
-const createCardFromNumbers = (numbers: number[], cardId: number, seriesId: number): BingoCard => {
+const createCardFromNumbers = (numbers: number[], stripId: number, cardPosition: number): BingoCard => {
   const card: (number | null)[][] = [];
   const numbersToPlace = [...numbers].sort((a, b) => a - b);
   let numberIndex = 0;
@@ -165,8 +174,14 @@ const createCardFromNumbers = (numbers: number[], cardId: number, seriesId: numb
   }
   
   globalNumberTracker.addCombination(card);
-  const serialNumber = generateSerialNumber(false, cardId);
-  return { id: cardId, numbers: card, seriesId, serialNumber };
+  // Use the new serial number format for cards in strips
+  const serialNumber = generateSerialNumber(true, stripId, cardPosition);
+  return { 
+    id: stripId * 6 + cardPosition, 
+    numbers: card, 
+    seriesId: stripId, 
+    serialNumber 
+  };
 };
 
 // Storage for generated cards and strips

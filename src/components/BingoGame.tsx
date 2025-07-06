@@ -5,7 +5,11 @@ import BallDisplay from '@/components/BallDisplay';
 import GameControls from '@/components/GameControls';
 import DrawnBalls from '@/components/DrawnBalls';
 
-const BingoGame: React.FC = () => {
+interface BingoGameProps {
+  onDrawnBallsChange?: (drawnBalls: number[]) => void;
+}
+
+const BingoGame: React.FC<BingoGameProps> = ({ onDrawnBallsChange }) => {
   const [gameActive, setGameActive] = useState(false);
   const [drawnBalls, setDrawnBalls] = useState<number[]>([]);
   const [currentBall, setCurrentBall] = useState<number | null>(null);
@@ -16,6 +20,13 @@ const BingoGame: React.FC = () => {
     const balls = Array.from({ length: 90 }, (_, i) => i + 1);
     setAvailableBalls(balls);
   }, []);
+
+  // Notify parent component when drawn balls change
+  useEffect(() => {
+    if (onDrawnBallsChange) {
+      onDrawnBallsChange(drawnBalls);
+    }
+  }, [drawnBalls, onDrawnBallsChange]);
 
   const startGame = () => {
     setGameActive(true);

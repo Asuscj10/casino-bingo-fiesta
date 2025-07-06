@@ -13,7 +13,9 @@ import {
   EuropeanStrip, 
   generateRandomCard, 
   generateEuropeanStrip, 
-  resetNumberTracker 
+  resetNumberTracker,
+  registerGeneratedCards,
+  registerGeneratedStrips
 } from '@/utils/bingoCardUtils';
 
 const BingoCardGenerator: React.FC = () => {
@@ -51,6 +53,10 @@ const BingoCardGenerator: React.FC = () => {
       
       setGeneratedCards(cards);
       setGeneratedStrips([]); // Clear strips when generating individual cards
+      
+      // Register cards in the global registry
+      registerGeneratedCards(cards);
+      
       toast({
         title: "¡Éxito!",
         description: `Se generaron ${numberOfCards} cartones individuales`,
@@ -94,6 +100,10 @@ const BingoCardGenerator: React.FC = () => {
       
       setGeneratedStrips(strips);
       setGeneratedCards([]); // Clear individual cards when generating strips
+      
+      // Register strips in the global registry
+      registerGeneratedStrips(strips);
+      
       toast({
         title: "¡Éxito!",
         description: `Se generaron ${numberOfStrips} tiras europeas (${numberOfStrips * 6} cartones en total)`,
@@ -236,6 +246,9 @@ const BingoCardGenerator: React.FC = () => {
       <h4 className="text-center text-black font-bold mb-2">
         Cartón #{card.id}{card.seriesId ? ` - Tira ${card.seriesId}` : ''}
       </h4>
+      <div className="text-center text-blue-600 font-bold text-sm mb-3">
+        Serie: {card.serialNumber}
+      </div>
       <table className="w-full border-collapse">
         <tbody>
           {card.numbers.map((row, rowIndex) => (

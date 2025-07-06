@@ -1,14 +1,15 @@
-
 export interface BingoCard {
   id: number;
   numbers: (number | null)[][];
   seriesId?: number;
+  serialNumber: string;
 }
 
 export interface EuropeanStrip {
   id: number;
   cards: BingoCard[];
   allNumbers: number[];
+  serialNumber: string;
 }
 
 // Clase para evitar repeticiones entre cartones
@@ -31,6 +32,15 @@ class NumberTracker {
 }
 
 export const globalNumberTracker = new NumberTracker();
+
+const generateSerialNumber = (isStrip: boolean = false, id: number): string => {
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const year = now.getFullYear().toString();
+  const prefix = isStrip ? 'T' : 'C';
+  return `${day}${month}${year}-${prefix}${id}`;
+};
 
 export const generateRandomCard = (cardId: number, seriesId?: number): BingoCard => {
   let attempts = 0;
@@ -79,7 +89,8 @@ export const generateRandomCard = (cardId: number, seriesId?: number): BingoCard
     // Check if this combination is unique
     if (globalNumberTracker.isUnique(card)) {
       globalNumberTracker.addCombination(card);
-      return { id: cardId, numbers: card, seriesId };
+      const serialNumber = generateSerialNumber(false, cardId);
+      return { id: cardId, numbers: card, seriesId, serialNumber };
     }
     
     attempts++;
@@ -106,7 +117,8 @@ const generateSimpleCard = (cardId: number, seriesId?: number): BingoCard => {
     card.push(cardRow);
   }
   
-  return { id: cardId, numbers: card, seriesId };
+  const serialNumber = generateSerialNumber(false, cardId);
+  return { id: cardId, numbers: card, seriesId, serialNumber };
 };
 
 export const generateEuropeanStrip = (stripId: number): EuropeanStrip => {
@@ -121,10 +133,13 @@ export const generateEuropeanStrip = (stripId: number): EuropeanStrip => {
     cards.push(card);
   }
   
+  const serialNumber = generateSerialNumber(true, stripId);
+  
   return {
     id: stripId,
     cards,
-    allNumbers
+    allNumbers,
+    serialNumber
   };
 };
 
@@ -150,9 +165,33 @@ const createCardFromNumbers = (numbers: number[], cardId: number, seriesId: numb
   }
   
   globalNumberTracker.addCombination(card);
-  return { id: cardId, numbers: card, seriesId };
+  const serialNumber = generateSerialNumber(false, cardId);
+  return { id: cardId, numbers: card, seriesId, serialNumber };
+};
+
+// Storage for generated cards and strips
+let generatedCardsRegistry: BingoCard[] = [];
+let generatedStripsRegistry: EuropeanStrip[] = [];
+
+export const registerGeneratedCards = (cards: BingoCard[]) => {
+  generatedCardsRegistry = [...generatedCardsRegistry, ...cards];
+};
+
+export const registerGeneratedStrips = (strips: EuropeanStrip[]) => {
+  generatedStripsRegistry = [...generatedStripsRegistry, ...strips];
+  const allCards = strips.flatMap(strip => strip.cards);
+  generatedCardsRegistry = [...generatedCardsRegistry, ...allCards];
+};
+
+export const findCardBySerial = (serialNumber: string): BingoCard | null => {
+  return generatedCardsRegistry.find(card => card.serialNumber === serialNumber) || null;
 };
 
 export const resetNumberTracker = () => {
   globalNumberTracker.reset();
+};
+
+export const clearRegistry = () => {
+  generatedCardsRegistry = [];
+  generatedStripsRegistry = [];
 };

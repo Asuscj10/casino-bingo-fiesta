@@ -3,8 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BingoGame from '@/components/BingoGame';
 import BingoCardGenerator from '@/components/BingoCardGenerator';
+import BingoAdministration from '@/components/BingoAdministration';
 
 const Index = () => {
+  const [drawnBalls, setDrawnBalls] = useState<number[]>([]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-black text-white">
       {/* Header */}
@@ -19,7 +22,7 @@ const Index = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="game" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 bg-yellow-600 h-12">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-yellow-600 h-12">
             <TabsTrigger 
               value="game" 
               className="text-black font-bold data-[state=active]:bg-yellow-500 data-[state=active]:text-black"
@@ -32,14 +35,24 @@ const Index = () => {
             >
               🎲 GENERADOR DE CARTONES
             </TabsTrigger>
+            <TabsTrigger 
+              value="administration" 
+              className="text-black font-bold data-[state=active]:bg-yellow-500 data-[state=active]:text-black"
+            >
+              🔍 ADMINISTRACIÓN
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="game">
-            <BingoGame />
+            <BingoGame onDrawnBallsChange={setDrawnBalls} />
           </TabsContent>
           
           <TabsContent value="generator">
             <BingoCardGenerator />
+          </TabsContent>
+          
+          <TabsContent value="administration">
+            <BingoAdministration drawnBalls={drawnBalls} />
           </TabsContent>
         </Tabs>
       </div>

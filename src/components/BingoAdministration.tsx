@@ -1,14 +1,21 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Search, FileText } from 'lucide-react';
+import { Search, FileText, Trophy, Award } from 'lucide-react';
 import { BingoCard, findCardBySerial } from '@/utils/bingoCardUtils';
 
 interface BingoAdministrationProps {
   drawnBalls: number[];
+}
+
+interface PrizeStatus {
+  hasLine: boolean;
+  hasFullCard: boolean;
+  completedLines: number[];
 }
 
 const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls }) => {
@@ -49,77 +56,157 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
     return cardNumbers.filter(number => drawnBalls.includes(number));
   };
 
-  const renderCardWithHits = (card: BingoCard) => {
-    const hitNumbers = getHitNumbers(card);
+  const checkPrizeStatus = (card: BingoCard): PrizeStatus => {
+    const completedLines: number[] = [];
     
+    // Check each row (line)
+    for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+      const row = card.numbers[rowIndex];
+      const rowNumbers = row.filter(n => n !== null) as number[];
+      const hitNumbersInRow = rowNumbers.filter(number => drawnBalls.includes(number));
+      
+      // A line is complete when all 5 numbers in the row are hit
+      if (hitNumbersInRow.length === 5) {
+        completedLines.push(rowIndex + 1);
+      }
+    }
+
+    const hasLine = completedLines.length > 0;
+    
+    // Check full card (all 15 numbers)
+    const allCardNumbers = card.numbers.flat().filter(n => n !== null) as number[];
+    const allHitNumbers = allCardNumbers.filter(number => drawnBalls.includes(number));
+    const hasFullCard = allHitNumbers.length === 15;
+
+    return {
+      hasLine,
+      hasFullCard,
+      completedLines
+    };
+  };
+
+  const renderPrizeStatus = (prizeStatus: PrizeStatus) => {
+    if (!prizeStatus.hasLine && !prizeStatus.hasFullCard) {
+      return (
+        <div className="bg-gray-100 border-2 border-gray-300 p-4 rounded-lg text-center">
+          <div className="text-gray-500 text-4xl mb-2">⚪</div>
+          <h4 className="font-bold text-gray-700 mb-1">Sin Premio</h4>
+          <p className="text-gray-600 text-sm">Este cartón no tiene premios aún</p>
+        </div>
+      );
+    }
+
     return (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="text-center mb-4">
-          <h3 className="text-xl font-bold text-black mb-2">
-            CARTÓN DE BINGO #{card.serialNumber}
-          </h3>
-          <div className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block">
-            <span className="font-bold">Serie: {card.serialNumber}</span>
-          </div>
-          {card.seriesId && (
-            <p className="text-gray-600 mt-1">Tira Europea #{card.seriesId}</p>
-          )}
-        </div>
-
-        <table className="w-full border-collapse mb-4">
-          <tbody>
-            {card.numbers.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, cellIndex) => {
-                  const isHit = cell !== null && drawnBalls.includes(cell);
-                  return (
-                    <td
-                      key={cellIndex}
-                      className={`w-12 h-12 border-2 border-gray-400 text-center text-sm font-bold ${
-                        cell 
-                          ? isHit 
-                            ? 'bg-green-500 text-white animate-pulse' 
-                            : 'bg-yellow-200 text-black'
-                          : 'bg-gray-100'
-                      }`}
-                    >
-                      {cell ? cell.toString().padStart(2, '0') : ''}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="bg-green-100 p-3 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{hitNumbers.length}</div>
-            <div className="text-sm text-green-800">Números Acertados</div>
-          </div>
-          <div className="bg-blue-100 p-3 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">
-              {card.numbers.flat().filter(n => n !== null).length}
+      <div className="space-y-3">
+        {prizeStatus.hasFullCard && (
+          <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 border-2 border-yellow-700 p-4 rounded-lg text-center shadow-lg">
+            <div className="text-yellow-900 text-4xl mb-2">
+              <Trophy className="inline-block w-10 h-10" />
             </div>
-            <div className="text-sm text-blue-800">Números Total</div>
-          </div>
-        </div>
-
-        {hitNumbers.length > 0 && (
-          <div className="mt-4 p-3 bg-green-50 rounded-lg">
-            <h4 className="font-bold text-green-800 mb-2">Números Acertados:</h4>
-            <div className="flex flex-wrap gap-2">
-              {hitNumbers.sort((a, b) => a - b).map(number => (
-                <span
-                  key={number}
-                  className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold"
-                >
-                  {number.toString().padStart(2, '0')}
-                </span>
-              ))}
-            </div>
+            <h4 className="font-bold text-yellow-900 text-lg mb-1">🏆 CARTÓN LLENO 🏆</h4>
+            <p className="text-yellow-800 text-sm font-semibold">¡Premio Máximo! Todos los números completados</p>
           </div>
         )}
+        
+        {prizeStatus.hasLine && (
+          <div className="bg-gradient-to-r from-green-400 to-green-600 border-2 border-green-700 p-4 rounded-lg text-center shadow-lg">
+            <div className="text-green-900 text-4xl mb-2">
+              <Award className="inline-block w-8 h-8" />
+            </div>
+            <h4 className="font-bold text-green-900 text-lg mb-1">🎯 LÍNEA COMPLETADA 🎯</h4>
+            <p className="text-green-800 text-sm font-semibold">
+              Línea{prizeStatus.completedLines.length > 1 ? 's' : ''} {prizeStatus.completedLines.join(', ')} completada{prizeStatus.completedLines.length > 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderCardWithHits = (card: BingoCard) => {
+    const hitNumbers = getHitNumbers(card);
+    const prizeStatus = checkPrizeStatus(card);
+    
+    return (
+      <div className="space-y-6">
+        {/* Prize Status */}
+        {renderPrizeStatus(prizeStatus)}
+        
+        {/* Card Display */}
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="text-center mb-4">
+            <h3 className="text-xl font-bold text-black mb-2">
+              CARTÓN DE BINGO #{card.serialNumber}
+            </h3>
+            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block">
+              <span className="font-bold">Serie: {card.serialNumber}</span>
+            </div>
+            {card.seriesId && (
+              <p className="text-gray-600 mt-1">Tira Europea #{card.seriesId}</p>
+            )}
+          </div>
+
+          <table className="w-full border-collapse mb-4">
+            <tbody>
+              {card.numbers.map((row, rowIndex) => {
+                const rowNumbers = row.filter(n => n !== null) as number[];
+                const hitNumbersInRow = rowNumbers.filter(number => drawnBalls.includes(number));
+                const isLineComplete = hitNumbersInRow.length === 5;
+                
+                return (
+                  <tr key={rowIndex} className={isLineComplete ? 'bg-green-100' : ''}>
+                    {row.map((cell, cellIndex) => {
+                      const isHit = cell !== null && drawnBalls.includes(cell);
+                      return (
+                        <td
+                          key={cellIndex}
+                          className={`w-12 h-12 border-2 border-gray-400 text-center text-sm font-bold ${
+                            cell 
+                              ? isHit 
+                                ? 'bg-green-500 text-white animate-pulse' 
+                                : 'bg-yellow-200 text-black'
+                              : 'bg-gray-100'
+                          } ${isLineComplete && cell !== null ? 'ring-2 ring-green-600' : ''}`}
+                        >
+                          {cell ? cell.toString().padStart(2, '0') : ''}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="bg-green-100 p-3 rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{hitNumbers.length}</div>
+              <div className="text-sm text-green-800">Números Acertados</div>
+            </div>
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">
+                {card.numbers.flat().filter(n => n !== null).length}
+              </div>
+              <div className="text-sm text-blue-800">Números Total</div>
+            </div>
+          </div>
+
+          {hitNumbers.length > 0 && (
+            <div className="mt-4 p-3 bg-green-50 rounded-lg">
+              <h4 className="font-bold text-green-800 mb-2">Números Acertados:</h4>
+              <div className="flex flex-wrap gap-2">
+                {hitNumbers.sort((a, b) => a - b).map(number => (
+                  <span
+                    key={number}
+                    className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold"
+                  >
+                    {number.toString().padStart(2, '0')}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -134,7 +221,7 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
         <div className="bg-indigo-700 p-4 rounded-lg mb-6">
           <h3 className="text-yellow-400 font-bold mb-2">Consultar Cartón</h3>
           <p className="text-white text-sm mb-4">
-            Ingrese el número de serie del cartón para consultar su estado actual.
+            Ingrese el número de serie del cartón para consultar su estado actual y verificar premios.
             Formato: DDMMYYYY-C# (individual) o DDMMYYYY-T# (tira europea)
           </p>
           

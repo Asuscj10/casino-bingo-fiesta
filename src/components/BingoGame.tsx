@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import BingoGameboard from '@/components/BingoGameboard';
 import BallDisplay from '@/components/BallDisplay';
@@ -56,7 +55,8 @@ const BingoGame: React.FC<BingoGameProps> = ({
     if (onDrawnBallsChange) {
       onDrawnBallsChange(newDrawnBalls);
     }
-    setAvailableBalls(prev => prev.filter(ball => ball !== drawnBall));
+    const newAvailableBalls = availableBalls.filter(ball => ball !== drawnBall);
+    setAvailableBalls(newAvailableBalls);
   };
 
   const resetGame = () => {

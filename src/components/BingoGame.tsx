@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import BingoGameboard from '@/components/BingoGameboard';
 import BallDisplay from '@/components/BallDisplay';
 import GameControls from '@/components/GameControls';
@@ -7,19 +7,25 @@ import DrawnBalls from '@/components/DrawnBalls';
 
 interface BingoGameProps {
   onDrawnBallsChange?: (drawnBalls: number[]) => void;
+  drawnBalls: number[];
+  gameActive: boolean;
+  setGameActive: (active: boolean) => void;
+  currentBall: number | null;
+  setCurrentBall: (ball: number | null) => void;
+  availableBalls: number[];
+  setAvailableBalls: (balls: number[]) => void;
 }
 
-const BingoGame: React.FC<BingoGameProps> = ({ onDrawnBallsChange }) => {
-  const [gameActive, setGameActive] = useState(false);
-  const [drawnBalls, setDrawnBalls] = useState<number[]>([]);
-  const [currentBall, setCurrentBall] = useState<number | null>(null);
-  const [availableBalls, setAvailableBalls] = useState<number[]>([]);
-
-  // Initialize available balls (01-90)
-  useEffect(() => {
-    const balls = Array.from({ length: 90 }, (_, i) => i + 1);
-    setAvailableBalls(balls);
-  }, []);
+const BingoGame: React.FC<BingoGameProps> = ({ 
+  onDrawnBallsChange,
+  drawnBalls,
+  gameActive,
+  setGameActive,
+  currentBall,
+  setCurrentBall,
+  availableBalls,
+  setAvailableBalls
+}) => {
 
   // Notify parent component when drawn balls change
   useEffect(() => {
@@ -30,10 +36,13 @@ const BingoGame: React.FC<BingoGameProps> = ({ onDrawnBallsChange }) => {
 
   const startGame = () => {
     setGameActive(true);
-    setDrawnBalls([]);
-    setCurrentBall(null);
+    // Reset balls state
     const balls = Array.from({ length: 90 }, (_, i) => i + 1);
     setAvailableBalls(balls);
+    setCurrentBall(null);
+    if (onDrawnBallsChange) {
+      onDrawnBallsChange([]);
+    }
   };
 
   const drawBall = () => {
@@ -43,16 +52,21 @@ const BingoGame: React.FC<BingoGameProps> = ({ onDrawnBallsChange }) => {
     const drawnBall = availableBalls[randomIndex];
     
     setCurrentBall(drawnBall);
-    setDrawnBalls(prev => [...prev, drawnBall]);
+    const newDrawnBalls = [...drawnBalls, drawnBall];
+    if (onDrawnBallsChange) {
+      onDrawnBallsChange(newDrawnBalls);
+    }
     setAvailableBalls(prev => prev.filter(ball => ball !== drawnBall));
   };
 
   const resetGame = () => {
     setGameActive(false);
-    setDrawnBalls([]);
     setCurrentBall(null);
     const balls = Array.from({ length: 90 }, (_, i) => i + 1);
     setAvailableBalls(balls);
+    if (onDrawnBallsChange) {
+      onDrawnBallsChange([]);
+    }
   };
 
   return (

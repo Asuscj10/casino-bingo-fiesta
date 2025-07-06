@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,7 +56,7 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <div className="text-center mb-4">
           <h3 className="text-xl font-bold text-black mb-2">
-            CARTÓN #{card.id}
+            CARTÓN DE BINGO #{card.serialNumber}
           </h3>
           <div className="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block">
             <span className="font-bold">Serie: {card.serialNumber}</span>

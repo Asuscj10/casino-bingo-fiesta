@@ -7,6 +7,15 @@ import BingoAdministration from '@/components/BingoAdministration';
 
 const Index = () => {
   const [drawnBalls, setDrawnBalls] = useState<number[]>([]);
+  const [gameActive, setGameActive] = useState(false);
+  const [currentBall, setCurrentBall] = useState<number | null>(null);
+  const [availableBalls, setAvailableBalls] = useState<number[]>([]);
+
+  // Initialize available balls (01-90)
+  useEffect(() => {
+    const balls = Array.from({ length: 90 }, (_, i) => i + 1);
+    setAvailableBalls(balls);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-black text-white">
@@ -44,7 +53,16 @@ const Index = () => {
           </TabsList>
           
           <TabsContent value="game">
-            <BingoGame onDrawnBallsChange={setDrawnBalls} />
+            <BingoGame 
+              onDrawnBallsChange={setDrawnBalls}
+              drawnBalls={drawnBalls}
+              gameActive={gameActive}
+              setGameActive={setGameActive}
+              currentBall={currentBall}
+              setCurrentBall={setCurrentBall}
+              availableBalls={availableBalls}
+              setAvailableBalls={setAvailableBalls}
+            />
           </TabsContent>
           
           <TabsContent value="generator">

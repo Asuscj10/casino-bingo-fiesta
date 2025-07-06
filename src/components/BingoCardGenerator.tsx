@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -136,7 +135,7 @@ const BingoCardGenerator: React.FC = () => {
     const printContent = allCards.map(card => `
       <div style="page-break-after: always; margin: 20px; border: 2px solid #000; padding: 10px;">
         <h3 style="text-align: center; margin-bottom: 10px;">
-          CARTÓN DE BINGO #${card.id}${card.seriesId ? ` - TIRA ${card.seriesId}` : ''}
+          CARTÓN DE BINGO #${card.serialNumber}${card.seriesId ? ` - TIRA ${card.seriesId}` : ''}
         </h3>
         <table style="width: 100%; border-collapse: collapse; margin: 0 auto;">
           ${card.numbers.map(row => `
@@ -213,7 +212,7 @@ const BingoCardGenerator: React.FC = () => {
           </div>
           ${allCards.map(card => `
             <div class="card">
-              <h3>CARTÓN DE BINGO #${card.id}${card.seriesId ? ` - TIRA EUROPEA ${card.seriesId}` : ''}</h3>
+              <h3>CARTÓN DE BINGO #${card.serialNumber}${card.seriesId ? ` - TIRA EUROPEA ${card.seriesId}` : ''}</h3>
               <table>
                 ${card.numbers.map(row => `
                   <tr>
@@ -244,7 +243,7 @@ const BingoCardGenerator: React.FC = () => {
   const renderCardPreview = (card: BingoCard) => (
     <div key={card.id} className="bg-white p-4 rounded-lg">
       <h4 className="text-center text-black font-bold mb-2">
-        Cartón #{card.id}{card.seriesId ? ` - Tira ${card.seriesId}` : ''}
+        Cartón #{card.serialNumber}{card.seriesId ? ` - Tira ${card.seriesId}` : ''}
       </h4>
       <div className="text-center text-blue-600 font-bold text-sm mb-3">
         Serie: {card.serialNumber}

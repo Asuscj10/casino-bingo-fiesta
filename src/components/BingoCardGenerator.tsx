@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -42,7 +43,32 @@ const BingoCardGenerator: React.FC = () => {
       resetNumberTracker();
       
       for (let i = 0; i < numberOfCards; i++) {
-        cards.push(generateRandomCard(i + 1));
+        let attempts = 0;
+        let newCard: BingoCard | null = null;
+        
+        // Try to generate a unique card with up to 50 attempts
+        while (attempts < 50 && !newCard) {
+          const candidateCard = generateRandomCard(i + 1);
+          
+          // Check if this card is unique compared to already generated cards
+          const isUnique = !cards.some(existingCard => 
+            JSON.stringify(existingCard.numbers) === JSON.stringify(candidateCard.numbers)
+          );
+          
+          if (isUnique) {
+            newCard = candidateCard;
+          } else {
+            attempts++;
+          }
+        }
+        
+        if (newCard) {
+          cards.push(newCard);
+        } else {
+          console.warn(`Could not generate unique card ${i + 1} after 50 attempts`);
+          // Add the last attempt anyway to avoid breaking the loop
+          cards.push(generateRandomCard(i + 1));
+        }
         
         // Update progress every 100 cards
         if (i % 100 === 0) {
@@ -89,7 +115,32 @@ const BingoCardGenerator: React.FC = () => {
       resetNumberTracker();
       
       for (let i = 0; i < numberOfStrips; i++) {
-        strips.push(generateEuropeanStrip(i + 1));
+        let attempts = 0;
+        let newStrip: EuropeanStrip | null = null;
+        
+        // Try to generate a unique strip with up to 30 attempts
+        while (attempts < 30 && !newStrip) {
+          const candidateStrip = generateEuropeanStrip(i + 1);
+          
+          // Check if this strip is unique compared to already generated strips
+          const isUnique = !strips.some(existingStrip => 
+            JSON.stringify(existingStrip.allNumbers.sort()) === JSON.stringify(candidateStrip.allNumbers.sort())
+          );
+          
+          if (isUnique) {
+            newStrip = candidateStrip;
+          } else {
+            attempts++;
+          }
+        }
+        
+        if (newStrip) {
+          strips.push(newStrip);
+        } else {
+          console.warn(`Could not generate unique strip ${i + 1} after 30 attempts`);
+          // Add the last attempt anyway to avoid breaking the loop
+          strips.push(generateEuropeanStrip(i + 1));
+        }
         
         // Update progress every 10 strips
         if (i % 10 === 0) {
@@ -440,7 +491,7 @@ const BingoCardGenerator: React.FC = () => {
               📄 Cartones Individuales
             </TabsTrigger>
             <TabsTrigger value="european" className="text-black font-bold">
-              🇪🇺 Tiras Europeas
+              🎯 Tiras Europeas
             </TabsTrigger>
           </TabsList>
 
@@ -475,7 +526,7 @@ const BingoCardGenerator: React.FC = () => {
 
           <TabsContent value="european" className="space-y-6">
             <div className="bg-blue-900 p-4 rounded-lg mb-6">
-              <h3 className="text-yellow-400 font-bold mb-2">🇪🇺 Tiras Europeas</h3>
+              <h3 className="text-yellow-400 font-bold mb-2">🎯 Tiras Europeas</h3>
               <p className="text-white text-sm">
                 Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
                 Perfectas para el bingo europeo tradicional.

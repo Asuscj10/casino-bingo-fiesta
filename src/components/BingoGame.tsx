@@ -77,9 +77,9 @@ const BingoGame: React.FC<BingoGameProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Left Column - Game Controls */}
-      <div className="lg:col-span-1">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Left Column - Game Controls & Drawn Balls */}
+      <div className="lg:col-span-1 space-y-8">
         <GameControls 
           gameActive={gameActive}
           onStartGame={startGame}
@@ -93,16 +93,13 @@ const BingoGame: React.FC<BingoGameProps> = ({
           autoInterval={autoInterval}
           setAutoInterval={setAutoInterval}
         />
+        
+        <DrawnBalls drawnBalls={drawnBalls} />
       </div>
 
-      {/* Middle Column - Gameboard */}
+      {/* Right Column - Gameboard (now takes full available space) */}
       <div className="lg:col-span-1">
         <BingoGameboard drawnBalls={drawnBalls} />
-      </div>
-
-      {/* Right Column - Drawn Balls History */}
-      <div className="lg:col-span-1">
-        <DrawnBalls drawnBalls={drawnBalls} />
       </div>
     </div>
   );

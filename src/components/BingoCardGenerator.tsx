@@ -72,10 +72,10 @@ const BingoCardGenerator: React.FC = () => {
   };
 
   const generateEuropeanStrips = async () => {
-    if (numberOfStrips < 1 || numberOfStrips > 1000) {
+    if (numberOfStrips < 1 || numberOfStrips > 10000) {
       toast({
         title: "Error",
-        description: "El número de tiras debe estar entre 1 y 1,000",
+        description: "El número de tiras debe estar entre 1 y 10,000",
         variant: "destructive",
       });
       return;
@@ -475,7 +475,7 @@ const BingoCardGenerator: React.FC = () => {
 
           <TabsContent value="european" className="space-y-6">
             <div className="bg-blue-900 p-4 rounded-lg mb-6">
-              <h3 className="text-yellow-400 font-bold mb-2">🇪🇺 Tiras Europeas de Bingo</h3>
+              <h3 className="text-yellow-400 font-bold mb-2">🇪🇺 Tiras Europeas</h3>
               <p className="text-white text-sm">
                 Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
                 Perfectas para el bingo europeo tradicional.
@@ -485,13 +485,13 @@ const BingoCardGenerator: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="numberOfStrips" className="text-white font-bold">
-                  Número de Tiras (máx. 1,000)
+                  Número de Tiras (máx. 10,000)
                 </Label>
                 <Input
                   id="numberOfStrips"
                   type="number"
                   min="1"
-                  max="1000"
+                  max="10000"
                   value={numberOfStrips}
                   onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
                   className="mt-2 bg-white text-black font-bold"

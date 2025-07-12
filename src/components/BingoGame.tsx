@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import BingoGameboard from '@/components/BingoGameboard';
-import BallDisplay from '@/components/BallDisplay';
 import GameControls from '@/components/GameControls';
 import DrawnBalls from '@/components/DrawnBalls';
 
@@ -25,6 +25,8 @@ const BingoGame: React.FC<BingoGameProps> = ({
   availableBalls,
   setAvailableBalls
 }) => {
+  const [isAutoMode, setIsAutoMode] = useState(true);
+  const [autoInterval, setAutoInterval] = useState(10);
 
   // Notify parent component when drawn balls change
   useEffect(() => {
@@ -59,9 +61,14 @@ const BingoGame: React.FC<BingoGameProps> = ({
     setAvailableBalls(newAvailableBalls);
   };
 
+  const pauseGame = () => {
+    // Solo pausa el modo automático, no detiene el juego
+  };
+
   const resetGame = () => {
     setGameActive(false);
     setCurrentBall(null);
+    setIsAutoMode(true);
     const balls = Array.from({ length: 90 }, (_, i) => i + 1);
     setAvailableBalls(balls);
     if (onDrawnBallsChange) {
@@ -71,18 +78,21 @@ const BingoGame: React.FC<BingoGameProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Left Column - Game Controls & Ball Display */}
-      <div className="lg:col-span-1 space-y-6">
+      {/* Left Column - Game Controls */}
+      <div className="lg:col-span-1">
         <GameControls 
           gameActive={gameActive}
           onStartGame={startGame}
           onDrawBall={drawBall}
+          onPauseGame={pauseGame}
           onResetGame={resetGame}
           availableBalls={availableBalls.length}
           drawnBalls={drawnBalls.length}
+          isAutoMode={isAutoMode}
+          setIsAutoMode={setIsAutoMode}
+          autoInterval={autoInterval}
+          setAutoInterval={setAutoInterval}
         />
-        
-        <BallDisplay currentBall={currentBall} />
       </div>
 
       {/* Middle Column - Gameboard */}

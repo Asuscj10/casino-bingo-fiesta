@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import BingoGameboard from '@/components/BingoGameboard';
 import GameControls from '@/components/GameControls';
-import DrawnBalls from '@/components/DrawnBalls';
 
 interface BingoGameProps {
   onDrawnBallsChange?: (drawnBalls: number[]) => void;
@@ -78,8 +77,8 @@ const BingoGame: React.FC<BingoGameProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Left Column - Game Controls & Drawn Balls */}
-      <div className="lg:col-span-1 space-y-8">
+      {/* Left Column - Game Controls */}
+      <div className="lg:col-span-1">
         <GameControls 
           gameActive={gameActive}
           onStartGame={startGame}
@@ -93,11 +92,9 @@ const BingoGame: React.FC<BingoGameProps> = ({
           autoInterval={autoInterval}
           setAutoInterval={setAutoInterval}
         />
-        
-        <DrawnBalls drawnBalls={drawnBalls} />
       </div>
 
-      {/* Right Column - Gameboard (now takes full available space) */}
+      {/* Right Column - Gameboard */}
       <div className="lg:col-span-1">
         <BingoGameboard drawnBalls={drawnBalls} />
       </div>

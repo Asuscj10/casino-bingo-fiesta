@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Search, FileText, Trophy, Award } from 'lucide-react';
+import { Search, FileText, Trophy, Award, Download } from 'lucide-react';
 import { BingoCard, findCardBySerial } from '@/utils/bingoCardUtils';
+import * as XLSX from 'xlsx';
 
 interface BingoAdministrationProps {
   drawnBalls: number[];
@@ -85,6 +86,89 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
     };
   };
 
+  const generateXLSXReport = () => {
+    // Get data from localStorage or your data source
+    const generatedCardsRegistry = JSON.parse(localStorage.getItem('generatedCardsRegistry') || '[]');
+    const generatedStripsRegistry = JSON.parse(localStorage.getItem('generatedStripsRegistry') || '[]');
+
+    // Filter winning cards and strips
+    const winningCards = generatedCardsRegistry.filter((card: BingoCard) => {
+      const prizeStatus = checkPrizeStatus(card);
+      return prizeStatus.hasLine || prizeStatus.hasFullCard;
+    });
+
+    const winningStrips = generatedStripsRegistry.filter((strip: any) => {
+      return strip.cards.some((card: BingoCard) => {
+        const prizeStatus = checkPrizeStatus(card);
+        return prizeStatus.hasLine || prizeStatus.hasFullCard;
+      });
+    });
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new();
+
+    // Sheet 1: Generated Cards
+    const cardsData = generatedCardsRegistry.map((card: BingoCard) => ({
+      'Número de Serie': card.serialNumber,
+      'ID': card.id,
+      'Tira ID': card.seriesId || 'Individual',
+      'Números': card.numbers.flat().filter(n => n !== null).join(', ')
+    }));
+    const cardsSheet = XLSX.utils.json_to_sheet(cardsData);
+    XLSX.utils.book_append_sheet(workbook, cardsSheet, 'Cartones Generados');
+
+    // Sheet 2: Generated Strips
+    const stripsData = generatedStripsRegistry.map((strip: any) => ({
+      'Número de Serie': strip.serialNumber,
+      'ID': strip.id,
+      'Cantidad de Cartones': strip.cards.length,
+      'Todos los Números': strip.allNumbers.join(', ')
+    }));
+    const stripsSheet = XLSX.utils.json_to_sheet(stripsData);
+    XLSX.utils.book_append_sheet(workbook, stripsSheet, 'Tiras Generadas');
+
+    // Sheet 3: Winning Cards
+    const winningCardsData = winningCards.map((card: BingoCard) => {
+      const prizeStatus = checkPrizeStatus(card);
+      return {
+        'Número de Serie': card.serialNumber,
+        'ID': card.id,
+        'Tira ID': card.seriesId || 'Individual',
+        'Tipo de Premio': prizeStatus.hasFullCard ? 'Cartón Lleno' : 'Línea',
+        'Líneas Completadas': prizeStatus.completedLines.join(', '),
+        'Números Acertados': getHitNumbers(card).length
+      };
+    });
+    const winningCardsSheet = XLSX.utils.json_to_sheet(winningCardsData);
+    XLSX.utils.book_append_sheet(workbook, winningCardsSheet, 'Cartones Premiados');
+
+    // Sheet 4: Winning Strips
+    const winningStripsData = winningStrips.map((strip: any) => {
+      const winningCardsInStrip = strip.cards.filter((card: BingoCard) => {
+        const prizeStatus = checkPrizeStatus(card);
+        return prizeStatus.hasLine || prizeStatus.hasFullCard;
+      });
+      
+      return {
+        'Número de Serie': strip.serialNumber,
+        'ID': strip.id,
+        'Cartones Premiados': winningCardsInStrip.length,
+        'Series de Cartones Premiados': winningCardsInStrip.map((card: BingoCard) => card.serialNumber).join(', ')
+      };
+    });
+    const winningStripsSheet = XLSX.utils.json_to_sheet(winningStripsData);
+    XLSX.utils.book_append_sheet(workbook, winningStripsSheet, 'Tiras Premiadas');
+
+    // Generate file
+    const fileName = `Reporte_Bingo_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+
+    toast({
+      title: "¡Reporte generado!",
+      description: `El archivo ${fileName} ha sido descargado exitosamente`,
+    });
+  };
+
   const renderPrizeStatus = (prizeStatus: PrizeStatus) => {
     if (!prizeStatus.hasLine && !prizeStatus.hasFullCard) {
       return (
@@ -108,7 +192,7 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
           </div>
         )}
         
-        {prizeStatus.hasLine && (
+        {prizeStatus.hasLine && !prizeStatus.hasFullCard && (
           <div className="bg-gradient-to-r from-green-400 to-green-600 border-2 border-green-700 p-4 rounded-lg text-center shadow-lg">
             <div className="text-green-900 text-4xl mb-2">
               <Award className="inline-block w-8 h-8" />
@@ -251,6 +335,21 @@ const BingoAdministration: React.FC<BingoAdministrationProps> = ({ drawnBalls })
               </Button>
             </div>
           </div>
+        </div>
+
+        {/* Generate Report Button */}
+        <div className="bg-purple-700 p-4 rounded-lg mb-6">
+          <h3 className="text-yellow-400 font-bold mb-2">Generar Reporte</h3>
+          <p className="text-white text-sm mb-4">
+            Genere un reporte completo en formato XLSX con todas las series, tiras y premios del sistema.
+          </p>
+          <Button
+            onClick={generateXLSXReport}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3"
+          >
+            <Download className="mr-2" />
+            GENERAR REPORTE XLSX
+          </Button>
         </div>
 
         {searchPerformed && (

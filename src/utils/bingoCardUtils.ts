@@ -190,12 +190,17 @@ let generatedStripsRegistry: EuropeanStrip[] = [];
 
 export const registerGeneratedCards = (cards: BingoCard[]) => {
   generatedCardsRegistry = [...generatedCardsRegistry, ...cards];
+  // Save to localStorage for report generation
+  localStorage.setItem('generatedCardsRegistry', JSON.stringify(generatedCardsRegistry));
 };
 
 export const registerGeneratedStrips = (strips: EuropeanStrip[]) => {
   generatedStripsRegistry = [...generatedStripsRegistry, ...strips];
   const allCards = strips.flatMap(strip => strip.cards);
   generatedCardsRegistry = [...generatedCardsRegistry, ...allCards];
+  // Save to localStorage for report generation
+  localStorage.setItem('generatedStripsRegistry', JSON.stringify(generatedStripsRegistry));
+  localStorage.setItem('generatedCardsRegistry', JSON.stringify(generatedCardsRegistry));
 };
 
 export const findCardBySerial = (serialNumber: string): BingoCard | null => {

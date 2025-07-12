@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,89 +9,90 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 100% 97%; /* Light blue background */
+    --foreground: 0 0% 100%; /* Pure white text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 217 100% 50%; /* Electric blue cards */
+    --card-foreground: 0 0% 100%; /* Pure white text on cards */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 217 100% 50%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 51 100% 50%; /* Vibrant yellow buttons */
+    --primary-foreground: 0 0% 0%; /* Black text on yellow buttons */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217 100% 50%; /* Electric blue secondary */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 217 100% 45%;
+    --muted-foreground: 0 0% 85%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 330 100% 59%; /* Fuchsia pink accent */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 217 100% 40%;
+    --input: 217 100% 45%;
+    --ring: 51 100% 50%; /* Yellow ring focus */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 217 100% 50%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 330 100% 59%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 100% 40%;
+    --sidebar-ring: 51 100% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Custom festival colors */
+    --festival-electric-blue: 217 100% 50%; /* #007BFF */
+    --festival-vibrant-yellow: 51 100% 50%; /* #FFD700 */
+    --festival-pure-white: 0 0% 100%; /* #FFFFFF */
+    --festival-fuchsia-pink: 330 100% 59%; /* #FF2D95 */
+    --festival-lime-green: 84 100% 51%; /* #32CD32 */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 217 100% 10%;
+    --foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 217 100% 15%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 217 100% 15%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 217 100% 20%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 217 100% 20%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 330 100% 59%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 217 100% 25%;
+    --input: 217 100% 25%;
+    --ring: 51 100% 50%;
+    
+    --sidebar-background: 217 100% 10%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 330 100% 59%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 100% 25%;
+    --sidebar-ring: 51 100% 50%;
   }
 }
 
@@ -101,5 +103,37 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(135deg, hsl(var(--festival-electric-blue)) 0%, hsl(var(--festival-electric-blue)) 100%);
+  }
+}
+
+/* Festival theme utility classes */
+@layer utilities {
+  .festival-bg-electric-blue {
+    background-color: hsl(var(--festival-electric-blue));
+  }
+  
+  .festival-bg-vibrant-yellow {
+    background-color: hsl(var(--festival-vibrant-yellow));
+  }
+  
+  .festival-text-white {
+    color: hsl(var(--festival-pure-white));
+  }
+  
+  .festival-text-fuchsia {
+    color: hsl(var(--festival-fuchsia-pink));
+  }
+  
+  .festival-text-lime {
+    color: hsl(var(--festival-lime-green));
+  }
+  
+  .festival-border-fuchsia {
+    border-color: hsl(var(--festival-fuchsia-pink));
+  }
+  
+  .festival-border-lime {
+    border-color: hsl(var(--festival-lime-green));
   }
 }

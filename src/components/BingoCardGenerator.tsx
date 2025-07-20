@@ -435,11 +435,11 @@ const BingoCardGenerator: React.FC = () => {
   };
 
   const renderCardPreview = (card: BingoCard) => (
-    <div key={card.id} className="bg-white p-4 rounded-lg festival-border-lime border-2">
-      <h4 className="text-center text-black font-bold mb-2">
+    <div key={card.id} className="bg-white p-4 rounded-lg border-2 border-blue-200 shadow-lg">
+      <h4 className="text-center text-gray-800 font-bold mb-2">
         Cartón #{card.serialNumber}
       </h4>
-      <div className="text-center festival-text-lime font-bold text-sm mb-3">
+      <div className="text-center text-blue-600 font-bold text-sm mb-3">
         Serie: {card.serialNumber}
       </div>
       <table className="w-full border-collapse">
@@ -449,8 +449,8 @@ const BingoCardGenerator: React.FC = () => {
               {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
-                  className={`w-8 h-8 border border-gray-400 text-center text-xs font-bold ${
-                    cell ? 'festival-bg-electric-blue festival-text-white' : 'bg-gray-100'
+                  className={`w-8 h-8 border border-gray-300 text-center text-xs font-bold ${
+                    cell ? 'bg-blue-500 text-white' : 'bg-gray-50'
                   }`}
                   style={!cell && selectedImage ? { 
                     backgroundImage: `url(${selectedImage})`,
@@ -472,18 +472,18 @@ const BingoCardGenerator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white border-2 festival-border-lime shadow-2xl">
+      <Card className="bg-white border-2 border-slate-200 shadow-lg">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-black mb-6 text-center">
-            🎲 GENERADOR DE CARTONES 🎲
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+            🎲 Generador de Cartones 🎲
           </h2>
           
           <Tabs defaultValue="individual" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6 festival-bg-electric-blue">
-              <TabsTrigger value="individual" className="festival-text-white font-bold hover:festival-text-lime">
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100">
+              <TabsTrigger value="individual" className="text-gray-700 font-medium hover:text-blue-600">
                 📄 Cartones Individuales
               </TabsTrigger>
-              <TabsTrigger value="european" className="festival-text-white font-bold hover:festival-text-lime">
+              <TabsTrigger value="european" className="text-gray-700 font-medium hover:text-blue-600">
                 🎯 Tiras Europeas
               </TabsTrigger>
             </TabsList>
@@ -491,7 +491,7 @@ const BingoCardGenerator: React.FC = () => {
             <TabsContent value="individual" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="numberOfCards" className="text-black font-bold">
+                  <Label htmlFor="numberOfCards" className="text-gray-700 font-medium">
                     Número de Cartones (máx. 20,000)
                   </Label>
                   <Input
@@ -501,7 +501,7 @@ const BingoCardGenerator: React.FC = () => {
                     max="20000"
                     value={numberOfCards}
                     onChange={(e) => setNumberOfCards(parseInt(e.target.value) || 1)}
-                    className="mt-2 bg-white text-black font-bold border-2 festival-border-lime"
+                    className="mt-2 bg-white text-gray-800 border-2 border-slate-300 focus:border-blue-400"
                   />
                 </div>
                 
@@ -509,18 +509,18 @@ const BingoCardGenerator: React.FC = () => {
                   <Button
                     onClick={generateIndividualCards}
                     disabled={isGenerating}
-                    className="w-full festival-bg-electric-blue festival-text-white font-bold hover:bg-blue-600 py-3"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3"
                   >
-                    {isGenerating ? 'Generando...' : 'GENERAR CARTONES'}
+                    {isGenerating ? 'Generando...' : 'Generar Cartones'}
                   </Button>
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="european" className="space-y-6">
-              <div className="festival-bg-electric-blue p-4 rounded-lg mb-6">
-                <h3 className="festival-text-white font-bold mb-2">🎯 Tiras Europeas</h3>
-                <p className="festival-text-white text-sm">
+              <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                <h3 className="text-blue-800 font-semibold mb-2">🎯 Tiras Europeas</h3>
+                <p className="text-blue-700 text-sm">
                   Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
                   Perfectas para el bingo europeo tradicional.
                 </p>
@@ -528,7 +528,7 @@ const BingoCardGenerator: React.FC = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="numberOfStrips" className="text-black font-bold">
+                  <Label htmlFor="numberOfStrips" className="text-gray-700 font-medium">
                     Número de Tiras (máx. 10,000)
                   </Label>
                   <Input
@@ -538,9 +538,9 @@ const BingoCardGenerator: React.FC = () => {
                     max="10000"
                     value={numberOfStrips}
                     onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
-                    className="mt-2 bg-white text-black font-bold border-2 festival-border-lime"
+                    className="mt-2 bg-white text-gray-800 border-2 border-slate-300 focus:border-blue-400"
                   />
-                  <p className="festival-text-lime text-xs mt-1">
+                  <p className="text-green-600 text-xs mt-1 font-medium">
                     Cada tira = 6 cartones ({numberOfStrips * 6} cartones en total)
                   </p>
                 </div>
@@ -549,10 +549,10 @@ const BingoCardGenerator: React.FC = () => {
                   <Button
                     onClick={generateEuropeanStrips}
                     disabled={isGenerating}
-                    className="w-full festival-bg-electric-blue festival-text-white font-bold hover:bg-blue-600 py-3"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3"
                   >
                     <Users className="mr-2" />
-                    {isGenerating ? 'Generando...' : 'GENERAR TIRAS'}
+                    {isGenerating ? 'Generando...' : 'Generar Tiras'}
                   </Button>
                 </div>
               </div>
@@ -564,7 +564,7 @@ const BingoCardGenerator: React.FC = () => {
               <div className="flex flex-wrap gap-4 justify-center">
                 <Button
                   onClick={exportToPDF}
-                  className="festival-bg-electric-blue festival-text-white font-bold hover:bg-blue-600"
+                  className="bg-green-500 hover:bg-green-600 text-white font-medium"
                 >
                   <FileText className="mr-2" />
                   Exportar a PDF
@@ -572,15 +572,15 @@ const BingoCardGenerator: React.FC = () => {
                 
                 <Button
                   onClick={exportToHTML}
-                  className="festival-bg-electric-blue festival-text-white font-bold hover:bg-blue-600"
+                  className="bg-purple-500 hover:bg-purple-600 text-white font-medium"
                 >
                   <Globe className="mr-2" />
                   Exportar a HTML
                 </Button>
               </div>
               
-              <div className="festival-bg-electric-blue p-4 rounded-lg">
-                <p className="festival-text-white font-bold text-center">
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <p className="text-green-800 font-medium text-center">
                   ✅ {getAllCards().length} cartones generados exitosamente
                   {generatedStrips.length > 0 && ` en ${generatedStrips.length} tiras europeas`}
                   {selectedImage && ' 🖼️ con imagen personalizada'}
@@ -588,7 +588,7 @@ const BingoCardGenerator: React.FC = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-lg font-bold text-black mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
                   Vista Previa (Primeros 3 Cartones)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

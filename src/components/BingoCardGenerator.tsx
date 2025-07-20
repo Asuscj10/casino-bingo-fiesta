@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -472,88 +473,96 @@ const BingoCardGenerator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white border-2 border-slate-200 shadow-lg">
+      <Card className="bg-gradient-to-br from-indigo-800 to-indigo-900 border-indigo-600 border-2 shadow-2xl">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-            🎲 Generador de Cartones 🎲
+          <h2 className="text-2xl font-bold text-yellow-400 mb-6 text-center">
+            🎲 GENERADOR DE CARTONES 🎲
           </h2>
           
           <Tabs defaultValue="individual" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100">
-              <TabsTrigger value="individual" className="text-gray-700 font-medium hover:text-blue-600">
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-indigo-700 border border-indigo-600">
+              <TabsTrigger 
+                value="individual" 
+                className="text-white font-medium hover:text-yellow-400 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+              >
                 📄 Cartones Individuales
               </TabsTrigger>
-              <TabsTrigger value="european" className="text-gray-700 font-medium hover:text-blue-600">
+              <TabsTrigger 
+                value="european" 
+                className="text-white font-medium hover:text-yellow-400 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+              >
                 🎯 Tiras Europeas
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="individual" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="numberOfCards" className="text-gray-700 font-medium">
-                    Número de Cartones (máx. 20,000)
-                  </Label>
-                  <Input
-                    id="numberOfCards"
-                    type="number"
-                    min="1"
-                    max="20000"
-                    value={numberOfCards}
-                    onChange={(e) => setNumberOfCards(parseInt(e.target.value) || 1)}
-                    className="mt-2 bg-white text-gray-800 border-2 border-slate-300 focus:border-blue-400"
-                  />
-                </div>
-                
-                <div className="flex items-end">
-                  <Button
-                    onClick={generateIndividualCards}
-                    disabled={isGenerating}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3"
-                  >
-                    {isGenerating ? 'Generando...' : 'Generar Cartones'}
-                  </Button>
+              <div className="bg-indigo-700 p-4 rounded-lg border border-indigo-600">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="numberOfCards" className="text-white font-medium">
+                      Número de Cartones (máx. 20,000)
+                    </Label>
+                    <Input
+                      id="numberOfCards"
+                      type="number"
+                      min="1"
+                      max="20000"
+                      value={numberOfCards}
+                      onChange={(e) => setNumberOfCards(parseInt(e.target.value) || 1)}
+                      className="mt-2 bg-white text-black border-2 border-indigo-500 font-bold"
+                    />
+                  </div>
+                  
+                  <div className="flex items-end">
+                    <Button
+                      onClick={generateIndividualCards}
+                      disabled={isGenerating}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+                    >
+                      {isGenerating ? 'Generando...' : 'Generar Cartones'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="european" className="space-y-6">
-              <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
-                <h3 className="text-blue-800 font-semibold mb-2">🎯 Tiras Europeas</h3>
-                <p className="text-blue-700 text-sm">
+              <div className="bg-indigo-700 p-4 rounded-lg mb-6 border border-indigo-600">
+                <h3 className="text-yellow-400 font-semibold mb-2">🎯 Tiras Europeas</h3>
+                <p className="text-white text-sm mb-4">
                   Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
                   Perfectas para el bingo europeo tradicional.
                 </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="numberOfStrips" className="text-gray-700 font-medium">
-                    Número de Tiras (máx. 10,000)
-                  </Label>
-                  <Input
-                    id="numberOfStrips"
-                    type="number"
-                    min="1"
-                    max="10000"
-                    value={numberOfStrips}
-                    onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
-                    className="mt-2 bg-white text-gray-800 border-2 border-slate-300 focus:border-blue-400"
-                  />
-                  <p className="text-green-600 text-xs mt-1 font-medium">
-                    Cada tira = 6 cartones ({numberOfStrips * 6} cartones en total)
-                  </p>
-                </div>
                 
-                <div className="flex items-end">
-                  <Button
-                    onClick={generateEuropeanStrips}
-                    disabled={isGenerating}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3"
-                  >
-                    <Users className="mr-2" />
-                    {isGenerating ? 'Generando...' : 'Generar Tiras'}
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="numberOfStrips" className="text-white font-medium">
+                      Número de Tiras (máx. 10,000)
+                    </Label>
+                    <Input
+                      id="numberOfStrips"
+                      type="number"
+                      min="1"
+                      max="10000"
+                      value={numberOfStrips}
+                      onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
+                      className="mt-2 bg-white text-black border-2 border-indigo-500 font-bold"
+                    />
+                    <p className="text-yellow-400 text-xs mt-1 font-medium">
+                      Cada tira = 6 cartones ({numberOfStrips * 6} cartones en total)
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-end">
+                    <Button
+                      onClick={generateEuropeanStrips}
+                      disabled={isGenerating}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+                    >
+                      <Users className="mr-2" />
+                      {isGenerating ? 'Generando...' : 'Generar Tiras'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </TabsContent>
@@ -564,7 +573,7 @@ const BingoCardGenerator: React.FC = () => {
               <div className="flex flex-wrap gap-4 justify-center">
                 <Button
                   onClick={exportToPDF}
-                  className="bg-green-500 hover:bg-green-600 text-white font-medium"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
                 >
                   <FileText className="mr-2" />
                   Exportar a PDF
@@ -572,15 +581,15 @@ const BingoCardGenerator: React.FC = () => {
                 
                 <Button
                   onClick={exportToHTML}
-                  className="bg-purple-500 hover:bg-purple-600 text-white font-medium"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
                 >
                   <Globe className="mr-2" />
                   Exportar a HTML
                 </Button>
               </div>
               
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <p className="text-green-800 font-medium text-center">
+              <div className="bg-green-700 p-4 rounded-lg border border-green-600">
+                <p className="text-white font-bold text-center">
                   ✅ {getAllCards().length} cartones generados exitosamente
                   {generatedStrips.length > 0 && ` en ${generatedStrips.length} tiras europeas`}
                   {selectedImage && ' 🖼️ con imagen personalizada'}
@@ -588,7 +597,7 @@ const BingoCardGenerator: React.FC = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <h3 className="text-lg font-semibold text-yellow-400 mb-4">
                   Vista Previa (Primeros 3 Cartones)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

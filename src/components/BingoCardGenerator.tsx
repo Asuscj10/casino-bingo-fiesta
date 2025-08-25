@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -203,7 +202,7 @@ const BingoCardGenerator: React.FC = () => {
         <div style="page-break-after: ${pageIndex < pages.length - 1 ? 'always' : 'auto'}; width: 21.59cm; height: 27.94cm; margin: 0; padding: 1cm; box-sizing: border-box; display: flex; justify-content: space-between;">
           <div style="width: 48%; display: flex; flex-direction: column; justify-content: space-around;">
             ${leftCards.map(card => `
-              <div style="margin-bottom: 0.5cm; border: 2px solid #007BFF; padding: 0.3cm; background: #FFD700;">
+              <div style="margin-bottom: 0.5cm; border: 2px solid #000; padding: 0.3cm; background: #fff;">
                 <h4 style="text-align: center; margin: 0 0 0.2cm 0; font-size: 12px; font-weight: bold; color: #000;">
                   CARTÓN DE BINGO #${card.serialNumber}
                 </h4>
@@ -211,7 +210,7 @@ const BingoCardGenerator: React.FC = () => {
                   ${card.numbers.map(row => `
                     <tr>
                       ${row.map(cell => `
-                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #007BFF; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #fff; color: #000;' : selectedImage ? `${getImageStyle()} background-color: #f9f9f9;` : 'background: #fff;'}">
+                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #fff; color: #000;' : selectedImage ? `${getImageStyle()} background-color: #f5f5f5;` : 'background: #fff;'}">
                           ${cell ? cell.toString().padStart(2, '0') : ''}
                         </td>
                       `).join('')}
@@ -224,7 +223,7 @@ const BingoCardGenerator: React.FC = () => {
           
           <div style="width: 48%; display: flex; flex-direction: column; justify-content: space-around;">
             ${rightCards.map(card => `
-              <div style="margin-bottom: 0.5cm; border: 2px solid #007BFF; padding: 0.3cm; background: #FFD700;">
+              <div style="margin-bottom: 0.5cm; border: 2px solid #000; padding: 0.3cm; background: #fff;">
                 <h4 style="text-align: center; margin: 0 0 0.2cm 0; font-size: 12px; font-weight: bold; color: #000;">
                   CARTÓN DE BINGO #${card.serialNumber}
                 </h4>
@@ -232,7 +231,7 @@ const BingoCardGenerator: React.FC = () => {
                   ${card.numbers.map(row => `
                     <tr>
                       ${row.map(cell => `
-                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #007BFF; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #fff; color: #000;' : selectedImage ? `${getImageStyle()} background-color: #f9f9f9;` : 'background: #fff;'}">
+                        <td style="width: 11.11%; height: 0.8cm; border: 1px solid #000; text-align: center; vertical-align: middle; font-size: 10px; font-weight: bold; ${cell ? 'background: #fff; color: #000;' : selectedImage ? `${getImageStyle()} background-color: #f5f5f5;` : 'background: #fff;'}">
                           ${cell ? cell.toString().padStart(2, '0') : ''}
                         </td>
                       `).join('')}
@@ -261,7 +260,7 @@ const BingoCardGenerator: React.FC = () => {
                 font-family: Arial, sans-serif; 
                 margin: 0; 
                 padding: 0; 
-                background: #007BFF;
+                background: #fff;
               }
               @media print { 
                 body { margin: 0; }
@@ -270,8 +269,8 @@ const BingoCardGenerator: React.FC = () => {
             </style>
           </head>
           <body>
-            <div class="no-print" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #FFD700; padding: 10px; border: 1px solid #007BFF; border-radius: 5px;">
-              <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <div class="no-print" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #fff; padding: 10px; border: 1px solid #000; border-radius: 5px;">
+              <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #000; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 Imprimir Cartones
               </button>
             </div>
@@ -323,7 +322,7 @@ const BingoCardGenerator: React.FC = () => {
             font-family: Arial, sans-serif; 
             margin: 0; 
             padding: 0; 
-            background: #007BFF; 
+            background: #fff; 
           }
           .page { 
             width: 21.59cm; 
@@ -344,9 +343,9 @@ const BingoCardGenerator: React.FC = () => {
           }
           .card { 
             margin-bottom: 0.5cm; 
-            border: 2px solid #007BFF; 
+            border: 2px solid #000; 
             padding: 0.3cm;
-            background: #FFD700; 
+            background: #fff; 
           }
           .card h4 { 
             text-align: center; 
@@ -362,7 +361,7 @@ const BingoCardGenerator: React.FC = () => {
           td { 
             width: 11.11%; 
             height: 0.8cm; 
-            border: 1px solid #007BFF; 
+            border: 1px solid #000; 
             text-align: center; 
             vertical-align: middle; 
             font-size: 10px; 
@@ -371,7 +370,7 @@ const BingoCardGenerator: React.FC = () => {
           .number { background: #fff; color: #000; }
           .blank { 
             background: #fff; 
-            ${selectedImage ? `background-image: url(${selectedImage}); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f9f9f9;` : ''}
+            ${selectedImage ? `background-image: url(${selectedImage}); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #f5f5f5;` : ''}
           }
         </style>
       </head>
@@ -436,11 +435,11 @@ const BingoCardGenerator: React.FC = () => {
   };
 
   const renderCardPreview = (card: BingoCard) => (
-    <div key={card.id} className="bg-white p-4 rounded-lg border-2 border-blue-200 shadow-lg">
-      <h4 className="text-center text-gray-800 font-bold mb-2">
+    <div key={card.id} className="bg-white p-4 rounded-lg border-2 border-gray-300 shadow-lg">
+      <h4 className="text-center text-black font-bold mb-2">
         Cartón #{card.serialNumber}
       </h4>
-      <div className="text-center text-blue-600 font-bold text-sm mb-3">
+      <div className="text-center text-gray-600 font-bold text-sm mb-3">
         Serie: {card.serialNumber}
       </div>
       <table className="w-full border-collapse">
@@ -450,15 +449,15 @@ const BingoCardGenerator: React.FC = () => {
               {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
-                  className={`w-8 h-8 border border-gray-300 text-center text-xs font-bold ${
-                    cell ? 'bg-blue-500 text-white' : 'bg-gray-50'
+                  className={`w-8 h-8 border border-black text-center text-xs font-bold ${
+                    cell ? 'bg-white text-black' : 'bg-gray-50'
                   }`}
                   style={!cell && selectedImage ? { 
                     backgroundImage: `url(${selectedImage})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
-                    backgroundColor: '#f9f9f9'
+                    backgroundColor: '#f5f5f5'
                   } : {}}
                 >
                   {cell ? cell.toString().padStart(2, '0') : ''}
@@ -475,7 +474,7 @@ const BingoCardGenerator: React.FC = () => {
     <div className="space-y-6">
       <Card className="bg-gradient-to-br from-indigo-800 to-indigo-900 border-indigo-600 border-2 shadow-2xl">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-yellow-400 mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-300 mb-6 text-center">
             🎲 GENERADOR DE CARTONES 🎲
           </h2>
           
@@ -483,13 +482,13 @@ const BingoCardGenerator: React.FC = () => {
             <TabsList className="grid w-full grid-cols-2 mb-6 bg-indigo-700 border border-indigo-600">
               <TabsTrigger 
                 value="individual" 
-                className="text-white font-medium hover:text-yellow-400 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+                className="text-white font-medium hover:text-gray-300 data-[state=active]:bg-gray-300 data-[state=active]:text-black"
               >
                 📄 Cartones Individuales
               </TabsTrigger>
               <TabsTrigger 
                 value="european" 
-                className="text-white font-medium hover:text-yellow-400 data-[state=active]:bg-yellow-400 data-[state=active]:text-black"
+                className="text-white font-medium hover:text-gray-300 data-[state=active]:bg-gray-300 data-[state=active]:text-black"
               >
                 🎯 Tiras Europeas
               </TabsTrigger>
@@ -528,7 +527,7 @@ const BingoCardGenerator: React.FC = () => {
 
             <TabsContent value="european" className="space-y-6">
               <div className="bg-indigo-700 p-4 rounded-lg mb-6 border border-indigo-600">
-                <h3 className="text-yellow-400 font-semibold mb-2">🎯 Tiras Europeas</h3>
+                <h3 className="text-gray-300 font-semibold mb-2">🎯 Tiras Europeas</h3>
                 <p className="text-white text-sm mb-4">
                   Cada tira contiene 6 cartones con todos los números del 01-90 distribuidos sin repetición.
                   Perfectas para el bingo europeo tradicional.
@@ -548,7 +547,7 @@ const BingoCardGenerator: React.FC = () => {
                       onChange={(e) => setNumberOfStrips(parseInt(e.target.value) || 1)}
                       className="mt-2 bg-white text-black border-2 border-indigo-500 font-bold"
                     />
-                    <p className="text-yellow-400 text-xs mt-1 font-medium">
+                    <p className="text-gray-300 text-xs mt-1 font-medium">
                       Cada tira = 6 cartones ({numberOfStrips * 6} cartones en total)
                     </p>
                   </div>
@@ -597,7 +596,7 @@ const BingoCardGenerator: React.FC = () => {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-yellow-400 mb-4">
+                <h3 className="text-lg font-semibold text-gray-300 mb-4">
                   Vista Previa (Primeros 3 Cartones)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
